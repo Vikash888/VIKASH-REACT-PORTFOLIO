@@ -1,0 +1,286 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": "auth != null",
+    
+    "projects": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["order", "visible", "featured", "category"],
+      "$projectId": {
+        ".validate": "newData.hasChildren(['title', 'description', 'category'])",
+        "id": { ".validate": "newData.isString()" },
+        "title": { ".validate": "newData.isString()" },
+        "description": { ".validate": "newData.isString()" },
+        "category": { ".validate": "newData.isString()" },
+        "mainImage": { ".validate": "!newData.exists() || newData.isString()" },
+        "mainImagePublicId": { ".validate": "!newData.exists() || newData.isString()" },
+        "media": {
+          ".validate": "!newData.exists() || newData.hasChildren()",
+          "$mediaIndex": {
+            "url": { ".validate": "newData.isString()" },
+            "public_id": { ".validate": "newData.isString()" },
+            "type": { ".validate": "newData.isString() && (newData.val() == 'image' || newData.val() == 'video')" },
+            "order": { ".validate": "!newData.exists() || newData.isNumber()" }
+          }
+        },
+        "technologies": {
+          ".validate": "!newData.exists() || newData.hasChildren()",
+          "$techIndex": { ".validate": "newData.isString()" }
+        },
+        "tools": {
+          ".validate": "!newData.exists() || newData.hasChildren()",
+          "$toolIndex": { ".validate": "newData.isString()" }
+        },
+        "githubLink": { ".validate": "!newData.exists() || newData.isString()" },
+        "demoLink": { ".validate": "!newData.exists() || newData.isString()" },
+        "featured": { ".validate": "!newData.exists() || newData.isBoolean()" },
+        "visible": { ".validate": "!newData.exists() || newData.isBoolean()" },
+        "views": { ".validate": "!newData.exists() || newData.isNumber()" },
+        "order": { ".validate": "!newData.exists() || newData.isNumber()" },
+        "createdAt": { ".validate": "newData.isString()" },
+        "updatedAt": { ".validate": "newData.isString()" },
+        "videoUrl": { ".validate": "!newData.exists() || newData.isString()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "views": {
+      ".read": true,
+      ".write": true
+    },
+
+    "visitors": {
+      ".read": true,
+      ".write": true
+    },
+
+    "analytics": {
+      ".read": true,
+      ".write": true,
+      "browsers": {
+        "$browser": {
+          "count": {
+            ".validate": "newData.isNumber()"
+          }
+        }
+      },
+      "devices": {
+        "$device": {
+          "count": {
+            ".validate": "newData.isNumber()"
+          }
+        }
+      },
+      "countries": {
+        "$country": {
+          "count": {
+            ".validate": "newData.isNumber()"
+          }
+        }
+      },
+      "os": {
+        "$os": {
+          "count": {
+            ".validate": "newData.isNumber()"
+          }
+        }
+      }
+    },
+
+    "activeUsers": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": true,
+      "$user_id": {
+        ".validate": "newData.hasChildren(['timestamp', 'browser', 'os', 'device'])",
+        "timestamp": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        }
+      }
+    },
+
+    "visitorGeoData": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null || !data.exists()",
+      "$visit_id": {
+        ".validate": "newData.hasChildren(['timestamp', 'country', 'city', 'browser', 'os', 'device'])"
+      }
+    },
+
+    "pageViews": {
+      ".read": true,
+      ".write": true,
+      "$page": {
+        "count": {
+          ".validate": "newData.isNumber()"
+        },
+        "lastUpdated": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        }
+      }
+    },
+
+    "notifications": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$notificationId": {
+        ".validate": "newData.hasChildren(['message', 'timestamp', 'type'])",
+        "message": { ".validate": "newData.isString() && newData.val().length <= 1000" },
+        "type": { ".validate": "newData.isString() && newData.val().matches(/^(info|warning|error|security)$/)" }
+      }
+    },
+
+    "blacklistedIPs": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$ip": {
+        ".validate": "newData.isBoolean()"
+      }
+    },
+
+    "blockedIPs": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$ip": {
+        ".validate": "newData.hasChildren(['blockedAt', 'status'])",
+        "blockedAt": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        },
+        "status": {
+          ".validate": "newData.val() === 'blocked'"
+        }
+      }
+    },
+
+    "securityLogs": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": true,
+      "$logId": {
+        ".validate": "newData.hasChildren(['type', 'timestamp', 'ip', 'userAgent'])",
+        "type": {
+          ".validate": "newData.isString() && newData.val().matches(/^(DEVTOOLS_DETECTED|SECURITY_ALERT|ACCESS_DENIED)$/)"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber() && newData.val() <= (now + 300000) && newData.val() >= (now - 300000)"
+        },
+        "ip": {
+          ".validate": "newData.isString() && newData.val().length <= 45"
+        },
+        "userAgent": {
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        }
+      }
+    },
+
+    "visitorStats": {
+      ".read": "!data.parent().child('devToolsDetection').child(auth.uid).exists()",
+      "daily": { ".validate": "newData.isNumber()" },
+      "weekly": { ".validate": "newData.isNumber()" },
+      "monthly": { ".validate": "newData.isNumber()" },
+      "yearly": { ".validate": "newData.isNumber()" },
+      "byCountry": {
+        "$country": {
+          ".validate": "newData.isNumber()"
+        }
+      },
+      "byDevice": {
+        "$device": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
+
+    "stats": {
+      "views": {
+        ".read": true,
+        ".write": true,
+        "total": { ".validate": "newData.isNumber()" },
+        "today": { ".validate": "newData.isNumber()" },
+        "week": { ".validate": "newData.isNumber()" },
+        "month": { ".validate": "newData.isNumber()" }
+      },
+      "uniqueVisitors": {
+        ".read": true,
+        ".write": true,
+        "total": { ".validate": "newData.isNumber()" },
+        "today": { ".validate": "newData.isNumber()" },
+        "week": { ".validate": "newData.isNumber()" },
+        "month": { ".validate": "newData.isNumber()" }
+      },
+      "sessionDuration": {
+        ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+        ".write": true,
+        "count": { ".validate": "newData.isNumber()" },
+        "totalDuration": { ".validate": "newData.isNumber()" },
+        "average": { ".validate": "newData.isNumber()" }
+      }
+    },
+
+    "ratelimits": {
+      ".read": "auth != null && !data.parent().child('devToolsDetection').child(auth.uid).exists()",
+      ".write": false,
+      "$uid": {
+        "count": { ".validate": "newData.isNumber()" },
+        "lastReset": { ".validate": "newData.isNumber()" }
+      }
+    },
+
+    "devToolsDetection": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": true,
+      "$uid": {
+        ".validate": "newData.hasChildren(['timestamp', 'blocked'])",
+        "timestamp": {
+          ".validate": "newData.isNumber() && newData.val() <= (now + 300000) && newData.val() >= (now - 300000)"
+        },
+        "blocked": {
+          ".validate": "newData.isBoolean()"
+        },
+        "attempts": {
+          ".validate": "newData.isNumber() && (!data.exists() || newData.val() === data.val() + 1)"
+        },
+        "lastAttemptMethod": {
+          ".validate": "newData.isString() && newData.val().matches(/^(KEYBOARD|MENU|CONTEXTMENU|F12|RIGHTCLICK)$/)"
+        }
+      }
+    },
+
+    "settings": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "maintenanceMode": {
+        ".validate": "newData.isBoolean()"
+      }
+    },
+
+    "maintenance": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "enabled": { ".validate": "newData.isBoolean()" },
+      "message": { ".validate": "newData.isString()" }
+    },
+    
+    "systemStatus": {
+      ".read": true,
+      ".write": true,
+      "maintenance": {
+        ".validate": "newData.hasChildren(['active', 'lastUpdate'])",
+        "active": { ".validate": "newData.isBoolean()" },
+        "lastUpdate": { ".validate": "newData.isNumber()" }
+      },
+      "logs": {
+        "$logId": {
+          ".validate": "newData.hasChildren(['timestamp', 'type', 'message'])",
+          "timestamp": { ".validate": "newData.isNumber()" },
+          "type": { ".validate": "newData.isString()" },
+          "message": { ".validate": "newData.isString()" }
+        }
+      }
+    },
+
+    "admins": {
+      ".read": "auth != null && (data.child(auth.uid).exists() || root.child('admins').child(auth.uid).exists())",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+    }
+  }
+}

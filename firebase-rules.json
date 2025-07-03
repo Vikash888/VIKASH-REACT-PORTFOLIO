@@ -1,0 +1,97 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": "auth != null",
+    
+    "projects": {
+      ".read": true,
+      ".write": "auth != true",
+      ".indexOn": ["order", "visible"]
+    },
+    
+    "stats": {
+      ".read": true,
+      ".write": true,
+      "views": {
+        ".read": true,
+        ".write": true,
+        "total": {
+          ".validate": "newData.isNumber() && (newData.val() === data.val() + 1 || !data.exists())"
+        },
+        "today": {
+          ".validate": "newData.isNumber() && (newData.val() === data.val() + 1 || !data.exists() || newData.val() === 0)"
+        },
+        "week": {
+          ".validate": "newData.isNumber() && (newData.val() === data.val() + 1 || !data.exists() || newData.val() === 0)"
+        },
+        "month": {
+          ".validate": "newData.isNumber() && (newData.val() === data.val() + 1 || !data.exists() || newData.val() === 0)"
+        }
+      },
+      "uniqueVisitors": {
+        ".read": true,
+        ".write": true
+      },
+      "sessionDuration": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    
+    "analytics": {
+      ".read": true,
+      ".write": true,
+      "browsers": {
+        ".read": true,
+        ".write": true
+      },
+      "countries": {
+        ".read": true,
+        ".write": true
+      },
+      "devices": {
+        ".read": true,
+        ".write": true
+      },
+      "os": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    
+    "pageViews": {
+      ".read": true,
+      ".write": true
+    },
+    
+    "visits": {
+      ".read": true,
+      ".write": true
+    },
+    
+    "visitors": {
+      ".read": true,
+      ".write": true
+    },
+    
+    "activeUsers": {
+      ".read": true,
+      ".write": true
+    },
+    
+    "settings": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    
+    "messages": {
+      ".read": "auth != null",
+      ".write": true
+    },
+    
+    "notifications": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}

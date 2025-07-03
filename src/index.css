@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply antialiased bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-200;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  min-height: 100vh;
+}
+
+/* Apply transition to all elements */
+* {
+  @apply transition-colors duration-200;
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+  
+  .animation-delay-1000 {
+    animation-delay: 1000ms;
+  }
+
+  .animation-delay-1500 {
+    animation-delay: 1500ms;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400;
+  }
+}
+
+/* Scrollbar styling */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 20px;
+  border: 3px solid transparent;
+}
+
+/* Dark mode scrollbar */
+.dark *::-webkit-scrollbar-thumb {
+  background-color: rgba(75, 85, 99, 0.8);
+}
+
+/* Project component isolation */
+#projects {
+  position: relative;
+  z-index: 0;
+  contain: layout style;
+}
+
+#about, #education, footer {
+  position: relative;
+  z-index: 10;
+  contain: layout style;
+}
+
+/* Make sure sections don't overlap */
+section {
+  position: relative;
+  isolation: isolate;
+}
