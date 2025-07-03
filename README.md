@@ -18,4 +18,6 @@ A secure and interactive developer portfolio with real-time capabilities.
 
 🔥 Firebase – Used for Authentication, Firestore, Hosting, and Real-time database features.
 
+☁️ Cloudinary - Used For Media storage, Photos, Videos, Resume
+
 🎨 Tailwind CSS – For rapid and responsive UI development.
